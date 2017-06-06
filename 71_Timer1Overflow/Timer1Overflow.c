@@ -1,6 +1,6 @@
 /*************************************
-* Purpose: 1초마다 overflow interrupt를 이용하여 
-* LED Shift
+* Purpose: Timer1을 이용하여 1초마다 overflow
+* interrupt에 의한 LED Shift
 *
 * TIMSK
 * TCCR1B
@@ -13,12 +13,16 @@
 
 unsigned char LED_ARRAY[9] = { 0xff, 0xfe, 0xfd, 0xfb, 0xf7, 0xef, 0xdf, 0xbf,
 		0x7f };
+unsigned char FND[10] = { 0XC0, 0XF9, 0XA4, 0XB0, 0X99, 0X92, 0X82, 0XD8, 0X80, 0X90 };
+
 volatile unsigned int index = 0;
 
 ISR (TIMER1_OVF_vect)	{
 // SIGNAL은 AVR studio v.7에서는 컴파일 안 됨
 // SIGNAL(SIG_OVERFLOW1) {
 	PORTA = LED_ARRAY[index];
+	PORTF = FND[index];
+	
 	index++;
 	if (index == 9)
 		index = 0;
@@ -27,7 +31,9 @@ ISR (TIMER1_OVF_vect)	{
 
 int main(void) {
 	DDRA = 0xFF;
+	DDRF = 0xFF;
 
+	cli();
 	// TOIE1: Timer Overflow Interrupt Enable (Timer 1);
 	// If this bit is set and if global interrupts are enabled, the micro will jump to // the Timer Overflow 1 interrupt vector upon Timer 1 Overflow.
 	TIMSK |= (1 << TOIE1);
