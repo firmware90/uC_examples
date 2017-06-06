@@ -13,17 +13,19 @@
 
 unsigned char LED_ARRAY[9] = { 0xff, 0xfe, 0xfd, 0xfb, 0xf7, 0xef, 0xdf, 0xbf,
 		0x7f };
-unsigned int index = 0;
+volatile unsigned int index = 0;
 
-SIGNAL(SIG_OVERFLOW1) {
+ISR (TIMER1_OVF_vect)	{
+// SIGNAL은 AVR studio v.7에서는 컴파일 안됨
+// SIGNAL(SIG_OVERFLOW1) {
 	PORTA = LED_ARRAY[index];
 	index++;
 	if (index == 9)
 		index = 0;
-	TCNT1 = 0xFFFF - OneSecond + 1;
+	TCNT1 = 0xFFFF - cOneSecond + 1;
 }
 
-void main(void) {
+int main(void) {
 	DDRA = 0xFF;
 
 	// TOIE1: Timer Overflow Interrupt Enable (Timer 1);
@@ -42,7 +44,7 @@ void main(void) {
 	110: increment timer 1 on T1 Pin falling edge
 	111: increment timer 1 on T1 Pin rising edge
 	*/
-	TCCR1B = 1<<CS12 | 1<<CS12 | 1<<CS12;  // /1024
+	TCCR1B |= (1<<CS12) | (1<<CS10);  // /1024
 
 	TCNT1 = 0xFFFF - cOneSecond + 1;
 

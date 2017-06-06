@@ -5,6 +5,15 @@
 * PORTn
 *************************************/
 
+// delay 함수를 이용하기 위해서는 기준 시간이 필요하므로
+// CPU의 메인 클럭에 대한 정보가 필요하다.
+//
+// # warning "F_CPU not defined for <util/delay.h>"
+//
+// 아래와 같은 warning을 없애기 위해서는 소스 크드에
+// F_CPU를 선언해 주거나, 환경설정에서 선언해 준다.
+#define F_CPU	14745600
+
 #include <avr/io.h>
 #include <util/delay.h>
 
